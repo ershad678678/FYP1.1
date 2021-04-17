@@ -7,7 +7,7 @@ import Checkout from "./Checkout"
 import Adapter from '../../Adapter'
 import ProductSale from "../Products/ProductSale"
 import '../../App.css'
-import FaceModel from '../Video/js/face.js'
+import FaceModel from '../Video/js/react-face.js'
 import demo from '../Video/demo.mp4';
 
 class POS extends Component{
@@ -102,7 +102,7 @@ class POS extends Component{
           </div>
         </div>
         <div id="container" style={{position:'absolute'},{height: "540"},{width: "720"},{top: "50%"}}>
-          <video src={demo} autoPlay={true} id="video" controls height="540" width="720"></video>
+          {/* <video src={demo} autoPlay={true} id="video" controls height="540" width="720"></video> */}
           <FaceModel></FaceModel>
         </div>
     </div>

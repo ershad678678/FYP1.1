@@ -33,7 +33,8 @@ const config = {
 
 firebase.initializeApp(config);
 
-let store = createStore(reducer)
+let store = createStore(reducer);
+
 
 // ReactDOM.render(<Provider store={store}>
 //       <React.StrictMode>
