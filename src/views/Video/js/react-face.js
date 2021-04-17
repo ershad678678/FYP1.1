@@ -8,6 +8,7 @@ import { idText } from 'typescript';
 const detectedFaces = [];
 const labeledDescriptors = [];
 const predictedAges = [];
+let id = 1;
 
 class FaceModel extends Component{
     constructor(props){
@@ -31,7 +32,6 @@ class FaceModel extends Component{
         
         //this.video = createRef();
         this.myCanvas = createRef();
-        this.id = createRef(0);
 
         this.assignLabel = this.assignLabel.bind(this);
         this.drawCanvas = this.drawCanvas.bind(this);
@@ -104,7 +104,6 @@ class FaceModel extends Component{
                         }
                     });
                 }
-                console.log(id++);
                 var t1 = performance.now();
                 console.log(t1-t0);
         }, 8000);
@@ -112,10 +111,8 @@ class FaceModel extends Component{
     }
     assignLabel = (desc) => {
         let name = 'person';
-        //console.log("id = ", id)
-        this.id.current = this.id.current + 1;
-        let label = name+this.id.current;
-        console.log(this.id.current);
+        let token = id++;
+        let label = name+token;
         labeledDescriptors.push(
         new faceapi.LabeledFaceDescriptors(label, desc)
         );
