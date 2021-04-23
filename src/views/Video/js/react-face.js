@@ -1,14 +1,16 @@
 import * as faceapi from 'face-api.js';
 import '../css/styles.css';
 import React, { Component, useState , createRef } from 'react';
+import Select from 'react-select';
 import axios from 'axios';
 import demo from '../demo.mp4';
 import { idText } from 'typescript';
+import FaceList from './face-list.js'
 
 const detectedFaces = [];
 const labeledDescriptors = [];
-const predictedAges = [];
-let id = 1;
+let predictedAges = [];
+let id = 0;
 
 class FaceModel extends Component{
     constructor(props){
@@ -19,8 +21,9 @@ class FaceModel extends Component{
             descriptor: [],
             url: "",
             age: 0,
-            gender: "male",
-            expr: "happy"
+            gender: "",
+            expr: "",
+            val: 0
         }
         Promise.all([
             faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
@@ -38,6 +41,10 @@ class FaceModel extends Component{
         this.drawFace = this.drawFace.bind(this);
         this.interpolateAgePredictions = this.interpolateAgePredictions.bind(this);
     }
+
+    // componentDidMount(){
+    //     this.getOptions();
+    // }
 
     faceDetection = () => {
         const maxThreshold = 0.6;
@@ -58,7 +65,7 @@ class FaceModel extends Component{
 
         setInterval(async () => {
             var t0 = performance.now();
-            var id = 1;
+            //var id = 1;
             const detections = await faceapi
                 .detectAllFaces(
                     video,
@@ -78,10 +85,24 @@ class FaceModel extends Component{
                 if(labeledDescriptors.length == 0){
                     detections.forEach(fd => {
                         let lb = this.assignLabel([fd.descriptor]);
+                        let mood = this.faceExpression(fd.expressions);
                         let resizedDetection = faceapi.resizeResults(fd, displaySize);
                         faceapi.draw.drawDetections(canvas, resizedDetection);
-                        // drawCanvas(fd, canvas, lb);
+                        let Age = this.drawCanvas(fd, canvas, lb);
                         this.drawFace(fd, video, lb);
+                        // const options = {
+                        //     "value": id,
+                        //     "label": lb
+                        // }
+                        this.setState({
+                            name: lb,
+                            descriptor: fd,
+                            age: Age,
+                            gender: fd.gender,
+                            expr: mood,
+                            val: id
+                        })
+                        console.log(this.state)
                     });
                 }
                 else{
@@ -90,10 +111,24 @@ class FaceModel extends Component{
                         let bestMatch = faceMatcher.findBestMatch(fd.descriptor);
                         if(bestMatch.distance >= maxThreshold){
                             let lb = this.assignLabel([fd.descriptor]);
+                            let mood = this.faceExpression(fd.expressions);
                             let resizedDetection = faceapi.resizeResults(fd, displaySize);
                             faceapi.draw.drawDetections(canvas, resizedDetection);
-                            // drawCanvas(fd, canvas, lb);
+                            let Age = this.drawCanvas(fd, canvas, lb);
                             this.drawFace(fd, video, lb);
+                            // const options = {
+                            //     "value": id,
+                            //     "label": lb
+                            // }
+                            this.setState({
+                                name: lb,
+                                descriptor: [fd],
+                                age: Age,
+                                gender: fd.gender,
+                                expr: mood,
+                                val: id
+                            });
+                            console.log(this.state)
                         }
                         else{
                             let resizedDetection = faceapi.resizeResults(fd, displaySize);
@@ -111,7 +146,7 @@ class FaceModel extends Component{
     }
     assignLabel = (desc) => {
         let name = 'person';
-        let token = id++;
+        let token = ++id;
         let label = name+token;
         labeledDescriptors.push(
         new faceapi.LabeledFaceDescriptors(label, desc)
@@ -123,11 +158,11 @@ class FaceModel extends Component{
         // }
         // axios.post('http://localhost:10000/customer/add', state)
         //   .then(res => console.log(res.data));
-        this.setState({
-            name: label,
-            descriptor: desc
-        });
-        console.log(this.state);
+        // this.setState({
+        //     name: label,
+        //     descriptor: desc
+        // });
+        //console.log(this.state);
         return label;
     }
 
@@ -143,6 +178,7 @@ class FaceModel extends Component{
           [`${faceapi.utils.round(interpolatedAge, 0)} years`+`\n${id}`],
           bottomRight
         ).draw(canvas);
+        return Math.floor(interpolatedAge);
     }
 
     drawFace = async (det, video, name) => {
@@ -154,12 +190,14 @@ class FaceModel extends Component{
         console.log("faceImg:", faceImg);
         faceImg.forEach(cnv =>{
             let distinctFace = {};
+            distinctFace["id"] = id;
             distinctFace["name"] = name;
             distinctFace["url"] = cnv.toDataURL();
             detectedFaces.push(distinctFace);
           });
-        console.log("Detected Faces:");
-        console.log(detectedFaces);
+        //console.log("Detected Faces:");
+        //console.log(detectedFaces);
+        //return distinctFace.url;
     }
 
     interpolateAgePredictions = (age) => {
@@ -168,11 +206,19 @@ class FaceModel extends Component{
           predictedAges.reduce((total, a) => total + a) / predictedAges.length;
         return avgPredictedAge;
     }
+
+    faceExpression = (expression) => {
+        var arr = Object.keys( expression ).map(function ( key ) { return expression[key]; });
+        var max = Math.max.apply( null, arr );
+        var final_exp = Object.keys(expression).find(key => expression[key] === max);
+        return final_exp
+    }
     
     render(){
         return(
             <div id="div">
                 <video src={demo} autoPlay={true} onPlay={this.faceDetection} id="video" controls height="540" width="720"></video>
+                <FaceList value={this.state.val} label={this.state.name}></FaceList>
             </div>
         );
     }
