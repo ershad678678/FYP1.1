@@ -6,6 +6,7 @@ const faceOptions = [];
 const customer_profiles = [];
 //let target = 0;
 let counter = 0;
+let count=0;
 
 class FaceList extends Component {
     constructor(props){
@@ -27,21 +28,31 @@ class FaceList extends Component {
     }
 
     render(){
+        count++;
         const customer_id = this.props.label;
         const customer_url = this.props.faceIcon;
         const customer_ageClass = this.props.ageClass;
         const opt = {value: this.props.value, label: customer_id};
         const profile = {id: customer_id, type: customer_ageClass, pic: customer_url};
-        // for (var i=0; i < faceOptions.length; i++) {
-        //     let track = -1;
-        //     if (faceOptions[i].value != opt.value) {
-        //         track++;
-        //     }
-        //     if (track == i){
-        //         faceOptions.push(opt)
-        //     }
-        // }
-        faceOptions.push(opt);
+        let track = -1;
+        let a=0;
+        if (count==1){faceOptions.push(opt)}
+        else{
+            for (var i=0; i < faceOptions.length; i++) {
+            
+                console.log("faceopt:", faceOptions[i]);
+                if (faceOptions[i].label != opt.label) {
+                    track++;
+                    console.log("track", track);
+                }
+                a=i;
+            }
+            if (track == a){
+                faceOptions.push(opt);
+            }
+        }
+        
+        // faceOptions.push(opt);
         customer_profiles.push(profile);
         faceOptions.forEach(fo => {console.log(fo)});
         return (

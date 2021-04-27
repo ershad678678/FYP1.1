@@ -25,7 +25,7 @@ class Customer_Card extends Component{
       <CardMedia
         className={classes.media}
         image="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-        // image = {props.image_url}
+        // image = {this.props.URL}
         title="Contemplative Reptile"
       />
       <CardContent>
