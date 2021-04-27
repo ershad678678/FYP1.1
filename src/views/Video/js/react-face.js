@@ -20,7 +20,7 @@ class FaceModel extends Component{
             name: "",
             descriptor: [],
             url: "",
-            age: 0,
+            age: "",
             gender: "",
             expr: "",
             val: 0
@@ -89,7 +89,7 @@ class FaceModel extends Component{
                         let resizedDetection = faceapi.resizeResults(fd, displaySize);
                         faceapi.draw.drawDetections(canvas, resizedDetection);
                         let Age = this.drawCanvas(fd, canvas, lb);
-                        this.drawFace(fd, video, lb);
+                        let faceURL = this.drawFace(fd, video, lb);
                         // const options = {
                         //     "value": id,
                         //     "label": lb
@@ -97,6 +97,7 @@ class FaceModel extends Component{
                         this.setState({
                             name: lb,
                             descriptor: fd,
+                            url: faceURL,
                             age: Age,
                             gender: fd.gender,
                             expr: mood,
@@ -115,7 +116,7 @@ class FaceModel extends Component{
                             let resizedDetection = faceapi.resizeResults(fd, displaySize);
                             faceapi.draw.drawDetections(canvas, resizedDetection);
                             let Age = this.drawCanvas(fd, canvas, lb);
-                            this.drawFace(fd, video, lb);
+                            let faceURL = this.drawFace(fd, video, lb);
                             // const options = {
                             //     "value": id,
                             //     "label": lb
@@ -123,6 +124,7 @@ class FaceModel extends Component{
                             this.setState({
                                 name: lb,
                                 descriptor: [fd],
+                                url: faceURL,
                                 age: Age,
                                 gender: fd.gender,
                                 expr: mood,
@@ -178,10 +180,16 @@ class FaceModel extends Component{
           [`${faceapi.utils.round(interpolatedAge, 0)} years`+`\n${id}`],
           bottomRight
         ).draw(canvas);
-        return Math.floor(interpolatedAge);
+        let final_age = Math.floor(interpolatedAge);
+        switch(true){
+            case (final_age < 30): return 'Young';
+            case (final_age >= 30 && final_age < 55): return 'Middle';
+            case (final_age >= 55): return 'Old';
+        }
     }
 
     drawFace = async (det, video, name) => {
+        let imgStr = "";
         let box = det.detection.box;
         const regionsToExtract = [
           new faceapi.Rect( box.x, box.y, box.width, box.height )
@@ -189,15 +197,16 @@ class FaceModel extends Component{
         let faceImg = await faceapi.extractFaces(video, regionsToExtract);
         console.log("faceImg:", faceImg);
         faceImg.forEach(cnv =>{
-            let distinctFace = {};
-            distinctFace["id"] = id;
-            distinctFace["name"] = name;
-            distinctFace["url"] = cnv.toDataURL();
-            detectedFaces.push(distinctFace);
+            // let distinctFace = {};
+            // distinctFace["id"] = id;
+            // distinctFace["name"] = name;
+            // distinctFace["url"] = cnv.toDataURL();
+            // detectedFaces.push(distinctFace);
+            imgStr = cnv.toDataURL();
           });
         //console.log("Detected Faces:");
         //console.log(detectedFaces);
-        //return distinctFace.url;
+        return imgStr;
     }
 
     interpolateAgePredictions = (age) => {
@@ -218,7 +227,7 @@ class FaceModel extends Component{
         return(
             <div id="div">
                 <video src={demo} autoPlay={true} onPlay={this.faceDetection} id="video" controls height="540" width="720"></video>
-                <FaceList value={this.state.val} label={this.state.name}></FaceList>
+                <FaceList value={this.state.val} label={this.state.name} faceIcon={this.state.url} ageClass={this.state.age}></FaceList>
             </div>
         );
     }
