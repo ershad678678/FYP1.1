@@ -5,14 +5,25 @@ import CardContent from "@material-ui/core/CardContent";
 import CardMedia from "@material-ui/core/CardMedia";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import DeleteIcon from '@material-ui/icons/Delete';
 
+let source = [];
 class Customer_Card extends Component{
   constructor(props){
     super(props);
+    this.state = {
+      picture: ""
+    }
+  }
+
+  componentDidUpdate(){
+   //source.push(this.props.URL);
   }
 
   render(){
     //const classes = useStyles();
+    console.log("IMG: ",this.props.URL);
     const p_history = [
       "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
       "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
@@ -22,12 +33,15 @@ class Customer_Card extends Component{
     const { classes } = this.props;
     return (
       <Card className={classes.root}>
+      {/* <img src={source[this.props.ID]}></img> */}
       <CardMedia
         className={classes.media}
-        image="https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60"
-        // image = {this.props.URL}
+        image={this.props.URL}
+        
+        // image = {this.state.picture}
         title="Contemplative Reptile"
-      />
+      >
+       </CardMedia>
       <CardContent>
         <Grid className={classes.details} container spacing={1}>
           <Grid className={classes.line} item xs={6}>
@@ -110,6 +124,14 @@ class Customer_Card extends Component{
             />
           ))}
         </div>
+        <Button
+        variant="contained"
+        color="secondary"
+        className={classes.button}
+        startIcon={<DeleteIcon />}
+      >
+        Delete
+      </Button>
       </CardContent>
     </Card>
     )

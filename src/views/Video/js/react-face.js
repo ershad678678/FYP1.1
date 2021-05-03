@@ -64,7 +64,7 @@ class FaceModel extends Component{
         faceapi.matchDimensions(canvas, displaySize);
 
         setInterval(async () => {
-            var t0 = performance.now();
+            //var t0 = performance.now();
             //var id = 1;
             const detections = await faceapi
                 .detectAllFaces(
@@ -89,21 +89,18 @@ class FaceModel extends Component{
                         let resizedDetection = faceapi.resizeResults(fd, displaySize);
                         faceapi.draw.drawDetections(canvas, resizedDetection);
                         let Age = this.drawCanvas(fd, canvas, lb);
-                        let faceURL = this.drawFace(fd, video, lb);
-                        // const options = {
-                        //     "value": id,
-                        //     "label": lb
-                        // }
-                        this.setState({
-                            name: lb,
-                            descriptor: fd,
-                            url: faceURL,
-                            age: Age,
-                            gender: fd.gender,
-                            expr: mood,
-                            val: id
-                        })
-                        console.log(this.state)
+                        //let faceURL = this.drawFace(fd, video, lb);
+                        this.drawFace(fd, video, lb, Age, mood);
+                        // this.setState({
+                        //     name: lb,
+                        //     descriptor: fd,
+                        //     //url: faceURL,
+                        //     age: Age,
+                        //     gender: fd.gender,
+                        //     expr: mood,
+                        //     val: id
+                        // })
+                        // console.log(this.state)
                     });
                 }
                 else{
@@ -116,21 +113,17 @@ class FaceModel extends Component{
                             let resizedDetection = faceapi.resizeResults(fd, displaySize);
                             faceapi.draw.drawDetections(canvas, resizedDetection);
                             let Age = this.drawCanvas(fd, canvas, lb);
-                            let faceURL = this.drawFace(fd, video, lb);
-                            // const options = {
-                            //     "value": id,
-                            //     "label": lb
-                            // }
-                            this.setState({
-                                name: lb,
-                                descriptor: [fd],
-                                url: faceURL,
-                                age: Age,
-                                gender: fd.gender,
-                                expr: mood,
-                                val: id
-                            });
-                            console.log(this.state)
+                            this.drawFace(fd, video, lb, Age, mood);
+                            // this.setState({
+                            //     name: lb,
+                            //     descriptor: [fd],
+                            //     //url: faceURL,
+                            //     age: Age,
+                            //     gender: fd.gender,
+                            //     expr: mood,
+                            //     val: id
+                            // });
+                            // console.log(this.state)
                         }
                         else{
                             let resizedDetection = faceapi.resizeResults(fd, displaySize);
@@ -141,8 +134,8 @@ class FaceModel extends Component{
                         }
                     });
                 }
-                var t1 = performance.now();
-                console.log(t1-t0);
+                // var t1 = performance.now();
+                // console.log(t1-t0);
         }, 8000);
        
     }
@@ -188,7 +181,7 @@ class FaceModel extends Component{
         }
     }
 
-    drawFace = async (det, video, name) => {
+    drawFace = async (det, video, name, Age, mood) => {
         let imgStr = "";
         let box = det.detection.box;
         const regionsToExtract = [
@@ -204,9 +197,19 @@ class FaceModel extends Component{
             // detectedFaces.push(distinctFace);
             imgStr = cnv.toDataURL();
           });
+          this.setState({
+            name: name,
+            descriptor: det,
+            url: imgStr,
+            age: Age,
+            gender: det.gender,
+            expr: mood,
+            val: id
+        })
+          console.log(this.state);
         //console.log("Detected Faces:");
         //console.log(detectedFaces);
-        return imgStr;
+        //return imgStr;
     }
 
     interpolateAgePredictions = (age) => {
