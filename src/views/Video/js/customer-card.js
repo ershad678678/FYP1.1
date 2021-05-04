@@ -16,6 +16,9 @@ class Customer_Card extends Component{
       picture: ""
     }
   }
+  handleDelete = () => {
+    this.props.parentCallback(this.props.ID);
+    }
 
   componentDidUpdate(){
    //source.push(this.props.URL);
@@ -23,7 +26,7 @@ class Customer_Card extends Component{
 
   render(){
     //const classes = useStyles();
-    console.log("IMG: ",this.props.URL);
+    //console.log("IMG: ",this.props.URL);
     const p_history = [
       "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
       "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
@@ -129,7 +132,7 @@ class Customer_Card extends Component{
         color="secondary"
         className={classes.button}
         startIcon={<DeleteIcon />}
-        onClick={() => this.props.onDelete(this.props.index)}
+        onClick={this.handleDelete}
       >
         Delete
       </Button>

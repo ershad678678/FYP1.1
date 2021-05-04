@@ -14,7 +14,7 @@ class FaceList extends Component {
         this.state = {
             target: 0,
             //face: ""
-            index:0
+            //index:0
         }
         
     }
@@ -22,7 +22,7 @@ class FaceList extends Component {
     handleChange = (e) => {
         for (var i=0; i < customer_profiles.length; i++) {
             if (customer_profiles[i].id === e.label) {
-                console.log("Checking Array: ",customer_profiles[i].pic)
+                //console.log("Checking Array: ",customer_profiles[i].pic)
                 this.setState({
                     target: i,
                     //face: customer_profiles[i].pic
@@ -33,10 +33,19 @@ class FaceList extends Component {
         
     }
 
-    handleDelete = indexx => {
-        faceOptions.splice(indexx,1);
-        customer_profiles.splice(indexx,1);
-      };
+    handleCallback = (indexx) => {
+        let tg = 0;
+        for (var i=0; i < customer_profiles.length; i++) {
+            if (customer_profiles[i].id == indexx) {
+                customer_profiles.splice(i,1);
+                faceOptions.splice(i,1);
+                tg = i;
+            }
+        }
+        this.handleChange(faceOptions[tg]);
+        // faceOptions.splice(indexx,1);
+        // customer_profiles.splice(indexx,1);
+    };
 
     UNSAFE_componentWillMount(){
         const customer_id = this.props.label;
@@ -95,12 +104,12 @@ class FaceList extends Component {
         //         customer_profiles.push(profile);
         //     }
         // }
-        console.log("render count", count);
+        //console.log("render count", count);
         
         return (
             <>
                 <Select options={faceOptions} onChange={this.handleChange.bind(this)}/>
-                <CustomerCard ID={customer_profiles[this.state.target].id} TYPE={customer_profiles[this.state.target].type} URL={customer_profiles[this.state.target].pic } onDelete={this.handleDelete[this.props.value]} />
+                <CustomerCard ID={customer_profiles[this.state.target].id} TYPE={customer_profiles[this.state.target].type} URL={customer_profiles[this.state.target].pic } parentCallback = {this.handleCallback} />
             </>
         )
     }
