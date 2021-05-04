@@ -129,6 +129,7 @@ class Customer_Card extends Component{
         color="secondary"
         className={classes.button}
         startIcon={<DeleteIcon />}
+        onClick={() => this.props.onDelete(this.props.index)}
       >
         Delete
       </Button>

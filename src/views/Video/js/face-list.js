@@ -14,6 +14,7 @@ class FaceList extends Component {
         this.state = {
             target: 0,
             //face: ""
+            index:0
         }
         
     }
@@ -31,6 +32,12 @@ class FaceList extends Component {
         //console.log(customer_profiles[this.state.target]);
         
     }
+
+    handleDelete = indexx => {
+        faceOptions.splice(indexx,1);
+        customer_profiles.splice(indexx,1);
+      };
+
     UNSAFE_componentWillMount(){
         const customer_id = this.props.label;
         const customer_url = this.props.faceIcon;
@@ -93,7 +100,7 @@ class FaceList extends Component {
         return (
             <>
                 <Select options={faceOptions} onChange={this.handleChange.bind(this)}/>
-                <CustomerCard ID={customer_profiles[this.state.target].id} TYPE={customer_profiles[this.state.target].type} URL={customer_profiles[this.state.target].pic} />
+                <CustomerCard ID={customer_profiles[this.state.target].id} TYPE={customer_profiles[this.state.target].type} URL={customer_profiles[this.state.target].pic } onDelete={this.handleDelete[this.props.value]} />
             </>
         )
     }
