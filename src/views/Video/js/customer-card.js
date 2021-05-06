@@ -7,21 +7,29 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import DeleteIcon from '@material-ui/icons/Delete';
+import Icon from '@material-ui/core/Icon';
+import axios from 'axios';
 
 let source = [];
 class Customer_Card extends Component{
   constructor(props){
     super(props);
-    this.state = {
-      picture: ""
-    }
   }
   handleDelete = () => {
     this.props.parentCallback(this.props.ID);
+  }
+
+  savePurchase = () => {
+    let entry = {
+      id: this.props.ID,
+      purchase: this.props.purchase
     }
+    axios.post('http://localhost:10000/purchases/add', entry)
+          .then(res => console.log(res.data));
+  }
 
   componentDidUpdate(){
-   //source.push(this.props.URL);
+   console.log(this.props.purchase);
   }
 
   render(){
@@ -40,8 +48,6 @@ class Customer_Card extends Component{
       <CardMedia
         className={classes.media}
         image={this.props.URL}
-        
-        // image = {this.state.picture}
         title="Contemplative Reptile"
       >
        </CardMedia>
@@ -128,13 +134,21 @@ class Customer_Card extends Component{
           ))}
         </div>
         <Button
+          variant="contained"
+          color="secondary"
+          className={classes.button}
+          startIcon={<DeleteIcon />}
+          onClick={this.handleDelete}
+        >
+          Delete
+      </Button>
+      <Button
         variant="contained"
-        color="secondary"
+        color="primary"
         className={classes.button}
-        startIcon={<DeleteIcon />}
-        onClick={this.handleDelete}
+        onClick={this.savePurchase}
       >
-        Delete
+        Proceed
       </Button>
       </CardContent>
     </Card>

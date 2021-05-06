@@ -109,7 +109,13 @@ class FaceList extends Component {
         return (
             <>
                 <Select options={faceOptions} onChange={this.handleChange.bind(this)}/>
-                <CustomerCard ID={customer_profiles[this.state.target].id} TYPE={customer_profiles[this.state.target].type} URL={customer_profiles[this.state.target].pic } parentCallback = {this.handleCallback} />
+                <CustomerCard 
+                    ID={customer_profiles[this.state.target].id} 
+                    TYPE={customer_profiles[this.state.target].type} 
+                    URL={customer_profiles[this.state.target].pic } 
+                    parentCallback = {this.handleCallback} 
+                    purchase = {this.props.purchase}
+                />
             </>
         )
     }

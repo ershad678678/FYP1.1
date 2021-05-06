@@ -8,14 +8,20 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/add').post((req, res) => {
-    const label = req.body.label;
+    const label = req.body.name;
     const descriptor = req.body.descriptor;
-    //const age = Number(req.body.age);
-    console.log(label,descriptor)
+    const picture = req.bpdy.url;
+    const age = req.body.age;
+    const gender = req.body.gender;
+    const expression = req.body.expr;
+    //console.log(label,descriptor)
     const newCustomer = new Customer({
       label,
-      descriptor
-      //age,
+      descriptor,
+      picture,
+      age,
+      gender,
+      expression
     });
 
     newCustomer.save()

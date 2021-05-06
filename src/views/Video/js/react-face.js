@@ -34,7 +34,7 @@ class FaceModel extends Component{
             .then(console.log("loading."));
         
         //this.video = createRef();
-        this.myCanvas = createRef();
+        //this.myCanvas = createRef();
 
         this.assignLabel = this.assignLabel.bind(this);
         this.drawCanvas = this.drawCanvas.bind(this);
@@ -55,7 +55,7 @@ class FaceModel extends Component{
         const div = document.querySelector("div");
         const canvas = faceapi.createCanvasFromMedia(video);
         div.append(canvas);  
-        const appended_canvas = document.querySelector("canvas")
+        //const appended_canvas = document.querySelector("canvas")
         //appended_canvas.style.position = 'relative';
         //appended_canvas.style.top = '45%';
         //appended_canvas.style.left = '25%';
@@ -230,7 +230,7 @@ class FaceModel extends Component{
         return(
             <div id="div">
                 <video src={demo} autoPlay={true} onPlay={this.faceDetection} id="video" controls height="540" width="720"></video>
-                <FaceList value={this.state.val} label={this.state.name} faceIcon={this.state.url} ageClass={this.state.age}></FaceList>
+                <FaceList value={this.state.val} label={this.state.name} faceIcon={this.state.url} ageClass={this.state.age} purchase={this.props.purchase}></FaceList>
             </div>
         );
     }

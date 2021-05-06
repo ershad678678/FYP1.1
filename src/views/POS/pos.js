@@ -8,14 +8,11 @@ import Adapter from '../../Adapter'
 import ProductSale from "../Products/ProductSale"
 import '../../App.css'
 import FaceModel from '../Video/js/react-face.js'
-import demo from '../Video/demo.mp4';
+//import demo from '../Video/demo.mp4';
 
 class POS extends Component{
   constructor(props){
     super(props);
-    this.state = {
-      faces: []
-    };
   }
 
   currentTransaction = () => {
@@ -103,7 +100,7 @@ class POS extends Component{
         </div>
         <div id="container" style={{position:'absolute'},{height: "540"},{width: "720"},{top: "50%"}}>
           {/* <video src={demo} autoPlay={true} id="video" controls height="540" width="720"></video> */}
-          <FaceModel></FaceModel>
+          <FaceModel purchase={this.props.checkoutItems}></FaceModel>
         </div>
     </div>
     )
