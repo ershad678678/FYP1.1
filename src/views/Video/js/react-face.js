@@ -174,11 +174,12 @@ class FaceModel extends Component{
           bottomRight
         ).draw(canvas);
         let final_age = Math.floor(interpolatedAge);
-        switch(true){
-            case (final_age < 30): return 'Young';
-            case (final_age >= 30 && final_age < 55): return 'Middle';
-            case (final_age >= 55): return 'Old';
-        }
+        // switch(true){
+        //     case (final_age < 30): return 'Young';
+        //     case (final_age >= 30 && final_age < 55): return 'Middle';
+        //     case (final_age >= 55): return 'Old';
+        // }
+        return final_age;
     }
 
     drawFace = async (det, video, name, Age, mood) => {
@@ -230,7 +231,16 @@ class FaceModel extends Component{
         return(
             <div id="div">
                 <video src={demo} autoPlay={true} onPlay={this.faceDetection} id="video" controls height="540" width="720"></video>
-                <FaceList value={this.state.val} label={this.state.name} faceIcon={this.state.url} ageClass={this.state.age} purchase={this.props.purchase}></FaceList>
+                <FaceList 
+                    value={this.state.val} 
+                    name={this.state.name} 
+                    desc={this.state.descriptor}
+                    faceIcon={this.state.url} 
+                    ageClass={this.state.age} 
+                    gender={this.state.gender}
+                    expression={this.state.expr}
+                    purchase={this.props.purchase}>
+                </FaceList>
             </div>
         );
     }

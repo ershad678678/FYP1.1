@@ -19,6 +19,20 @@ class Customer_Card extends Component{
     this.props.parentCallback(this.props.ID);
   }
 
+  saveCustomer = () => {
+    let entry = {
+      name: this.props.ID,
+      descriptor: this.props.DESC,
+      url: this.props.URL,
+      age: this.props.AGE,
+      gender: this.props.GENDER,
+      expr: this.props.EXPRESSION
+    }
+    axios.post('http://localhost:10000/customer/add', entry)
+          .then(res => console.log(res.data));
+    this.savePurchase();
+  }
+
   savePurchase = () => {
     let entry = {
       id: this.props.ID,
@@ -146,7 +160,7 @@ class Customer_Card extends Component{
         variant="contained"
         color="primary"
         className={classes.button}
-        onClick={this.savePurchase}
+        onClick={this.saveCustomer}
       >
         Proceed
       </Button>
