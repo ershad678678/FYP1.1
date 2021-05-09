@@ -9,8 +9,10 @@ import FaceList from './face-list.js'
 
 const detectedFaces = [];
 const labeledDescriptors = [];
+const customer_info = [];
 let predictedAges = [];
 let id = 0;
+var lfd;
 
 class FaceModel extends Component{
     constructor(props){
@@ -18,7 +20,7 @@ class FaceModel extends Component{
 
         this.state = {
             name: "",
-            descriptor: [],
+            descriptor: {},
             url: "",
             age: "",
             gender: "",
@@ -47,6 +49,7 @@ class FaceModel extends Component{
     // }
 
     faceDetection = () => {
+        this.extractFaceFromDB();
         const maxThreshold = 0.6;
         let counter = 0;
         var facematcher;
@@ -54,7 +57,8 @@ class FaceModel extends Component{
         const video = document.querySelector("video");
         const div = document.querySelector("div");
         const canvas = faceapi.createCanvasFromMedia(video);
-        div.append(canvas);  
+        div.append(canvas);
+        
         //const appended_canvas = document.querySelector("canvas")
         //appended_canvas.style.position = 'relative';
         //appended_canvas.style.top = '45%';
@@ -126,11 +130,25 @@ class FaceModel extends Component{
                             // console.log(this.state)
                         }
                         else{
+                            let track = 0;
                             let resizedDetection = faceapi.resizeResults(fd, displaySize);
-                            //console.log(resizedDetection);
                             faceapi.draw.drawDetections(canvas, resizedDetection);
-                            // drawCanvas(resizedDetection, canvas, bestMatch.label);
-                            // drawFace(fd, video);
+                            this.drawCanvas(resizedDetection, canvas, bestMatch.label);
+                            for(var i=0; i < customer_info.length; i++){
+                                if(customer_info[i].name == bestMatch.label){
+                                    track = i;
+                                }
+                            }
+                            this.setState({
+                                name: customer_info[track].name,
+                                descriptor: lfd,
+                                url: customer_info[track].face,
+                                age: customer_info[track].age,
+                                gender: customer_info[track].gender,
+                                expr: customer_info[track].expr,
+                                val: id
+                            })
+                            id++;
                         }
                     });
                 }
@@ -143,9 +161,9 @@ class FaceModel extends Component{
         let name = 'person';
         let token = ++id;
         let label = name+token;
-        labeledDescriptors.push(
-        new faceapi.LabeledFaceDescriptors(label, desc)
-        );
+        console.log("Old descriptors: ",desc);
+        lfd = new faceapi.LabeledFaceDescriptors(label, desc)
+        labeledDescriptors.push(lfd);
         // console.log(labeledDescriptors);
         // let stat = {
         // label: label,
@@ -191,26 +209,18 @@ class FaceModel extends Component{
         let faceImg = await faceapi.extractFaces(video, regionsToExtract);
         console.log("faceImg:", faceImg);
         faceImg.forEach(cnv =>{
-            // let distinctFace = {};
-            // distinctFace["id"] = id;
-            // distinctFace["name"] = name;
-            // distinctFace["url"] = cnv.toDataURL();
-            // detectedFaces.push(distinctFace);
             imgStr = cnv.toDataURL();
           });
           this.setState({
             name: name,
-            descriptor: det,
+            descriptor: lfd,
             url: imgStr,
             age: Age,
             gender: det.gender,
             expr: mood,
             val: id
         })
-          console.log(this.state);
-        //console.log("Detected Faces:");
-        //console.log(detectedFaces);
-        //return imgStr;
+        console.log(this.state);
     }
 
     interpolateAgePredictions = (age) => {
@@ -225,6 +235,33 @@ class FaceModel extends Component{
         var max = Math.max.apply( null, arr );
         var final_exp = Object.keys(expression).find(key => expression[key] === max);
         return final_exp
+    }
+
+    extractFaceFromDB = () => {
+        axios.get('http://localhost:10000/customer/')
+             .then(customers => {
+                 //console.log(customers.data);
+                 customers.data.forEach(cd => {
+                    let cd_label = cd.label;
+                    let cd_lfd = cd.descriptor.descriptors;
+                    let f32arr = [
+                        new Float32Array(cd_lfd[0])
+                    ]
+                    labeledDescriptors.push(
+                        new faceapi.LabeledFaceDescriptors(cd.label, f32arr)
+                    );
+                    let cinfo = {
+                        name: cd.label,
+                        face: cd.picture,
+                        age: cd.age,
+                        gender: cd.gender,
+                        expr: cd.expression
+                    }
+                    customer_info.push(cinfo);
+                 });
+                console.log("Descriptors: ",labeledDescriptors);
+                console.log(customer_info);
+             })
     }
     
     render(){

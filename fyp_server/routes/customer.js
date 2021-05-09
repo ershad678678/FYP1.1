@@ -35,11 +35,15 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/customer/update/:id').post((req, res) => {
+router.route('/update/:id').post((req, res) => {
   Customer.findById(req.params.id)
     .then(exercise => {
-      customer.label = req.body.username;
-      customer.descriptor = req.body.description;
+      customer.label = req.body.name;
+      customer.descriptor = req.body.descriptor;
+      customer.picture = req.body.url;
+      customer.age = req.body.age;
+      customer.gender = req.body.gender;
+      customer.expression = req.body.expr;
       //customer.age = Number(req.body.duration);
 
       customer.save()

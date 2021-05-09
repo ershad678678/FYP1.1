@@ -8,6 +8,7 @@ import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import DeleteIcon from '@material-ui/icons/Delete';
 import Icon from '@material-ui/core/Icon';
+import TextField from '@material-ui/core/TextField';
 import axios from 'axios';
 
 let source = [];
@@ -20,7 +21,7 @@ class Customer_Card extends Component{
   }
 
   saveCustomer = () => {
-    let entry = {
+    let custmr = {
       name: this.props.ID,
       descriptor: this.props.DESC,
       url: this.props.URL,
@@ -28,22 +29,71 @@ class Customer_Card extends Component{
       gender: this.props.GENDER,
       expr: this.props.EXPRESSION
     }
-    axios.post('http://localhost:10000/customer/add', entry)
-          .then(res => console.log(res.data));
-    this.savePurchase();
+    axios.post('http://localhost:10000/customer/add', custmr)
+         .then(res => console.log(res.data));
+    //this.savePurchase();
   }
 
   savePurchase = () => {
-    let entry = {
-      id: this.props.ID,
-      purchase: this.props.purchase
-    }
-    axios.post('http://localhost:10000/purchases/add', entry)
-          .then(res => console.log(res.data));
+  let query = this.props.ID;
+  axios.get('http://localhost:10000/purchases/'+query)
+       .then(response => {
+          if(response.data == 0){
+            // means first ever transaction of customer
+            let buy = this.pushTransaction(this.props.purchase);
+            console.log("IF EXECUTED");
+            let transaction = {
+            id: this.props.ID,
+            purchase: buy
+          }
+            axios.post('http://localhost:10000/purchases/add', transaction)
+                .then(res => console.log(res.data));
+          }
+          else{
+          console.log("ELSE EXECUTED")
+          let buy = this.updateTransaction(response.data);
+          let transaction = {
+          id: this.props.ID,
+          purchase: buy
+          }
+          axios.put('http://localhost:10000/purchases/update/'+query, transaction)
+               .then(res => console.log(res.data));
+          }
+       })//.catch(console.log("Error"))
+  }
+
+  pushTransaction = (purch) => {
+    //let purch = this.props.purchase;
+    let items = [];
+    purch.forEach(p => {
+      //console.log(p.item_name,p.image_url,p.checkoutqty,p.retail_price);
+      let entry = {
+        item: p.item_name,
+        img: p.image_url,
+        qty: p.checkoutqty,
+        price: p.retail_price
+      };
+      items.push(entry);
+    });
+    return items;
+  }
+
+  updateTransaction = (data) => {
+    let old_items = data[0].items;
+    //console.log("Old Items: ",old_items);
+    let new_items = this.pushTransaction(this.props.purchase);
+    //console.log("New Items: ",new_items);
+    let updated_items = old_items.concat(new_items);
+    console.log("Merged Items: ",updated_items);
+    return updated_items;
   }
 
   componentDidUpdate(){
-   console.log(this.props.purchase);
+  //  let prch = this.props.purchase;
+  //  prch.forEach(p => {
+  //    console.log(p.item_name,p.image_url,p.checkoutqty,p.retail_price);
+  //  })
+  //console.log(this.props.purchase);
   }
 
   render(){
@@ -64,7 +114,7 @@ class Customer_Card extends Component{
         image={this.props.URL}
         title="Contemplative Reptile"
       >
-       </CardMedia>
+      </CardMedia>
       <CardContent>
         <Grid className={classes.details} container spacing={1}>
           <Grid className={classes.line} item xs={6}>
@@ -121,7 +171,8 @@ class Customer_Card extends Component{
             </Typography>
           </Grid>
         </Grid>
-
+        {/* HERE LIES THE NAME */}
+        <TextField id="outlined-basic" label="Outlined" variant="outlined" />
         <Typography  color="textSecondary" variant="p" style={{marginLeft:'5px'}}>
           Purchase History:
         </Typography>

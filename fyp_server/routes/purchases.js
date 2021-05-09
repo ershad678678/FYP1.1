@@ -14,29 +14,21 @@ router.route('/add').post((req, res) => {
       name,
       items
     });
-
     newPurchase.save()
     .then(() => res.json('Purchase added!'))
     .catch(err => {res.status(500).json('Error: ' + err);console.log("Error is here")});
 });
 
-router.route('/:id').get((req, res) => {
-  Purchase.findById(req.params.id)
+router.route('/:name').get((req, res) => {
+  Purchase.find( { "name": req.params.name } )
     .then(purchase => res.json(purchase))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/purchases/update/:id').post((req, res) => {
-  Purchase.findById(req.params.id)
-    .then(exercise => {
-      purchase.name = req.body.id;
-      purchase.items = req.body.purchase;
-      //customer.age = Number(req.body.duration);
-
-      purchase.save()
-        .then(() => res.json('Purchase updated!'))
-        .catch(err => res.status(400).json('Error: ' + err));
-    })
+router.route('/update/:name').put((req, res) => {
+  const query = { "name": req.params.name };
+  const replacement = { "name": req.body.id , "items": req.body.purchase };
+  Purchase.findOneAndReplace(query, replacement)
     .catch(err => res.status(500).json('Error: ' + err));
 });
 
