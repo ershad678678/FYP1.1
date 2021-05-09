@@ -93,43 +93,22 @@ class FaceModel extends Component{
                         let resizedDetection = faceapi.resizeResults(fd, displaySize);
                         faceapi.draw.drawDetections(canvas, resizedDetection);
                         let Age = this.drawCanvas(fd, canvas, lb);
-                        //let faceURL = this.drawFace(fd, video, lb);
                         this.drawFace(fd, video, lb, Age, mood);
-                        // this.setState({
-                        //     name: lb,
-                        //     descriptor: fd,
-                        //     //url: faceURL,
-                        //     age: Age,
-                        //     gender: fd.gender,
-                        //     expr: mood,
-                        //     val: id
-                        // })
-                        // console.log(this.state)
                     });
                 }
                 else{
                     const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, maxThreshold);
                     detections.forEach(fd => {
                         let bestMatch = faceMatcher.findBestMatch(fd.descriptor);
-                        if(bestMatch.distance >= maxThreshold){
+                        if((bestMatch.distance >= maxThreshold)){
                             let lb = this.assignLabel([fd.descriptor]);
                             let mood = this.faceExpression(fd.expressions);
                             let resizedDetection = faceapi.resizeResults(fd, displaySize);
                             faceapi.draw.drawDetections(canvas, resizedDetection);
                             let Age = this.drawCanvas(fd, canvas, lb);
                             this.drawFace(fd, video, lb, Age, mood);
-                            // this.setState({
-                            //     name: lb,
-                            //     descriptor: [fd],
-                            //     //url: faceURL,
-                            //     age: Age,
-                            //     gender: fd.gender,
-                            //     expr: mood,
-                            //     val: id
-                            // });
-                            // console.log(this.state)
                         }
-                        else{
+                        else if((bestMatch.distance < maxThreshold) && (customer_info.length > 0)){
                             let track = 0;
                             let resizedDetection = faceapi.resizeResults(fd, displaySize);
                             faceapi.draw.drawDetections(canvas, resizedDetection);
@@ -139,16 +118,24 @@ class FaceModel extends Component{
                                     track = i;
                                 }
                             }
-                            this.setState({
-                                name: customer_info[track].name,
-                                descriptor: lfd,
-                                url: customer_info[track].face,
-                                age: customer_info[track].age,
-                                gender: customer_info[track].gender,
-                                expr: customer_info[track].expr,
-                                val: id
-                            })
-                            id++;
+                            if(customer_info[track].flag == false){
+                                this.setState({
+                                    name: customer_info[track].name,
+                                    descriptor: lfd,
+                                    url: customer_info[track].face,
+                                    age: customer_info[track].age,
+                                    gender: customer_info[track].gender,
+                                    expr: customer_info[track].expr,
+                                    val: id,
+                                })
+                                id++;
+                                customer_info[track].flag = true;
+                            }
+                        }
+                        else{
+                            let resizedDetection = faceapi.resizeResults(fd, displaySize);
+                            faceapi.draw.drawDetections(canvas, resizedDetection);
+                            this.drawCanvas(resizedDetection, canvas, bestMatch.label);
                         }
                     });
                 }
@@ -164,18 +151,6 @@ class FaceModel extends Component{
         console.log("Old descriptors: ",desc);
         lfd = new faceapi.LabeledFaceDescriptors(label, desc)
         labeledDescriptors.push(lfd);
-        // console.log(labeledDescriptors);
-        // let stat = {
-        // label: label,
-        // descriptor: desc
-        // }
-        // axios.post('http://localhost:10000/customer/add', state)
-        //   .then(res => console.log(res.data));
-        // this.setState({
-        //     name: label,
-        //     descriptor: desc
-        // });
-        //console.log(this.state);
         return label;
     }
 
@@ -255,7 +230,8 @@ class FaceModel extends Component{
                         face: cd.picture,
                         age: cd.age,
                         gender: cd.gender,
-                        expr: cd.expression
+                        expr: cd.expression,
+                        flag: false
                     }
                     customer_info.push(cinfo);
                  });
