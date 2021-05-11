@@ -27,11 +27,20 @@ class Customer_Card extends Component{
       url: this.props.URL,
       age: this.props.AGE,
       gender: this.props.GENDER,
-      expr: this.props.EXPRESSION
+      expr: this.props.EXPRESSION,
+      visit: this.props.VISIT
     }
     axios.post('http://localhost:10000/customer/add', custmr)
          .then(res => console.log(res.data));
     //this.savePurchase();
+  }
+
+  updateCustomer = () => {
+    let query = this.props.ID;
+    axios.put('http://localhost:10000/customer/incvisit/'+query)
+         .then(res => console.log(res.data));
+    this.props.parentCallback(query);
+    this.props.reset(query);
   }
 
   savePurchase = () => {
@@ -97,8 +106,6 @@ class Customer_Card extends Component{
   }
 
   render(){
-    //const classes = useStyles();
-    //console.log("IMG: ",this.props.URL);
     const p_history = [
       "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
       "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
@@ -108,18 +115,22 @@ class Customer_Card extends Component{
     const { classes } = this.props;
     return (
       <Card className={classes.root}>
-      {/* <img src={source[this.props.ID]}></img> */}
       <CardMedia
         className={classes.media}
         image={this.props.URL}
-        title="Contemplative Reptile"
-      >
+        title="Contemplative Reptile">
       </CardMedia>
+      {this.props.MSG}
       <CardContent>
         <Grid className={classes.details} container spacing={1}>
+          {/* <Grid className={classes.line} item xs={6}>
+            <Typography variant="body2" color="textPrimary" component="p">
+              {this.props.MSG}
+            </Typography>
+          </Grid> */}
           <Grid className={classes.line} item xs={6}>
             <Typography variant="body2" color="textSecondary" component="p">
-              Customer ID:
+              Customer Name:
             </Typography>
           </Grid>
           <Grid  className={classes.line} item xs={3}>
@@ -129,12 +140,12 @@ class Customer_Card extends Component{
           </Grid>
           <Grid  className={classes.line} item xs={6}>
             <Typography variant="body2" color="textSecondary" component="p">
-              Customer Type:
+              Customer Age:
             </Typography>
           </Grid>
           <Grid  className={classes.line} item xs={3}>
             <Typography variant="body2" color="textSecondary" component="p">
-              {this.props.TYPE}
+              {this.props.AGE}
             </Typography>
           </Grid>
           <Grid  className={classes.line} item xs={6}>
@@ -144,8 +155,7 @@ class Customer_Card extends Component{
           </Grid>
           <Grid  className={classes.line} item xs={3}>
             <Typography variant="body2" color="textSecondary" component="p">
-              4
-              {/* {props.visits} */}
+              {this.props.VISIT}
             </Typography>
           </Grid>
           <Grid  className={classes.line} item xs={6}>
@@ -172,7 +182,7 @@ class Customer_Card extends Component{
           </Grid>
         </Grid>
         {/* HERE LIES THE NAME */}
-        <TextField id="outlined-basic" label="Outlined" variant="outlined" />
+        {/* <TextField id="outlined-basic" label="Outlined" variant="outlined" /> */}
         <Typography  color="textSecondary" variant="p" style={{marginLeft:'5px'}}>
           Purchase History:
         </Typography>
@@ -214,6 +224,14 @@ class Customer_Card extends Component{
         onClick={this.saveCustomer}
       >
         Proceed
+      </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        className={classes.button}
+        onClick={this.updateCustomer}
+      >
+        Update
       </Button>
       </CardContent>
     </Card>

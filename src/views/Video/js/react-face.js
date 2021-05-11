@@ -19,12 +19,14 @@ class FaceModel extends Component{
         super(props);
 
         this.state = {
+            msg: "",
             name: "",
             descriptor: {},
             url: "",
             age: "",
             gender: "",
             expr: "",
+            visit: 0,
             val: 0
         }
         Promise.all([
@@ -88,12 +90,13 @@ class FaceModel extends Component{
 
                 if(labeledDescriptors.length == 0){
                     detections.forEach(fd => {
+                        let visit_no = 1;
                         let lb = this.assignLabel([fd.descriptor]);
                         let mood = this.faceExpression(fd.expressions);
                         let resizedDetection = faceapi.resizeResults(fd, displaySize);
                         faceapi.draw.drawDetections(canvas, resizedDetection);
                         let Age = this.drawCanvas(fd, canvas, lb);
-                        this.drawFace(fd, video, lb, Age, mood);
+                        this.drawFace(fd, video, lb, Age, mood, visit_no);
                     });
                 }
                 else{
@@ -101,12 +104,13 @@ class FaceModel extends Component{
                     detections.forEach(fd => {
                         let bestMatch = faceMatcher.findBestMatch(fd.descriptor);
                         if((bestMatch.distance >= maxThreshold)){
+                            let visit_no = 1;
                             let lb = this.assignLabel([fd.descriptor]);
                             let mood = this.faceExpression(fd.expressions);
                             let resizedDetection = faceapi.resizeResults(fd, displaySize);
                             faceapi.draw.drawDetections(canvas, resizedDetection);
                             let Age = this.drawCanvas(fd, canvas, lb);
-                            this.drawFace(fd, video, lb, Age, mood);
+                            this.drawFace(fd, video, lb, Age, mood, visit_no);
                         }
                         else if((bestMatch.distance < maxThreshold) && (customer_info.length > 0)){
                             let track = 0;
@@ -119,17 +123,21 @@ class FaceModel extends Component{
                                 }
                             }
                             if(customer_info[track].flag == false){
+                                ++customer_info[track].vis;
                                 this.setState({
+                                    msg: "Customer exists",
                                     name: customer_info[track].name,
                                     descriptor: lfd,
                                     url: customer_info[track].face,
                                     age: customer_info[track].age,
                                     gender: customer_info[track].gender,
                                     expr: customer_info[track].expr,
+                                    visit: customer_info[track].vis,
                                     val: id,
                                 })
                                 id++;
                                 customer_info[track].flag = true;
+                                console.log("SetState executed");
                             }
                         }
                         else{
@@ -175,24 +183,26 @@ class FaceModel extends Component{
         return final_age;
     }
 
-    drawFace = async (det, video, name, Age, mood) => {
+    drawFace = async (det, video, name, Age, mood, visit_no) => {
         let imgStr = "";
         let box = det.detection.box;
         const regionsToExtract = [
           new faceapi.Rect( box.x, box.y, box.width, box.height )
         ]
         let faceImg = await faceapi.extractFaces(video, regionsToExtract);
-        console.log("faceImg:", faceImg);
+        //console.log("faceImg:", faceImg);
         faceImg.forEach(cnv =>{
             imgStr = cnv.toDataURL();
           });
           this.setState({
+            msg: "New Customer",
             name: name,
             descriptor: lfd,
             url: imgStr,
             age: Age,
             gender: det.gender,
             expr: mood,
+            visit: visit_no,
             val: id
         })
         console.log(this.state);
@@ -231,20 +241,33 @@ class FaceModel extends Component{
                         age: cd.age,
                         gender: cd.gender,
                         expr: cd.expression,
+                        vis: cd.visits,
                         flag: false
                     }
                     customer_info.push(cinfo);
                  });
-                console.log("Descriptors: ",labeledDescriptors);
-                console.log(customer_info);
+                // console.log("Descriptors: ",labeledDescriptors);
+                // console.log(customer_info);
              })
     }
     
+    resetFlag = (tg) => {
+        let tck = 0;
+        for(var i=0; i < customer_info.length; i++){
+            if(customer_info[i].name == tg){
+                tck = i;
+            }
+        }
+        console.log("Changed flag to false");
+        customer_info[tck].flag = false;
+    }
+
     render(){
         return(
             <div id="div">
                 <video src={demo} autoPlay={true} onPlay={this.faceDetection} id="video" controls height="540" width="720"></video>
                 <FaceList 
+                    message={this.state.msg}
                     value={this.state.val} 
                     name={this.state.name} 
                     desc={this.state.descriptor}
@@ -252,7 +275,9 @@ class FaceModel extends Component{
                     ageClass={this.state.age} 
                     gender={this.state.gender}
                     expression={this.state.expr}
-                    purchase={this.props.purchase}>
+                    visitCount={this.state.visit}
+                    purchase={this.props.purchase}
+                    resetFlag={this.resetFlag}>
                 </FaceList>
             </div>
         );

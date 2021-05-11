@@ -24,7 +24,8 @@ class FaceList extends Component {
                 this.setState({
                     target: i,
                     //face: customer_profiles[i].pic
-                })
+                });
+                console.log(customer_profiles);
             }
         }
     }
@@ -43,21 +44,30 @@ class FaceList extends Component {
         // customer_profiles.splice(indexx,1);
     };
 
+    flagReset = (inx) => {
+        this.props.resetFlag(inx);
+    }
+
     UNSAFE_componentWillMount(){
+        const customer_msg = this.props.message;
         const customer_id = this.props.name;
         const customer_desc = this.props.desc;
         const customer_url = this.props.faceIcon;
         const customer_ageClass = this.props.ageClass;
         const customer_gender = this.props.gender;
         const customer_expr = this.props.expression;
+        const customer_visit = this.props.visitCount;
         const opt = {value: this.props.value, label: customer_id};
+        //console.log(opt);
         const profile = {
+            status: customer_msg,
             id: customer_id, 
             desc: customer_desc, 
             url: customer_url,
             age: customer_ageClass,
             gender: customer_gender,
-            expression: customer_expr 
+            expression: customer_expr,
+            visit: customer_visit
         };
         faceOptions.push(opt);
         customer_profiles.push(profile);
@@ -67,20 +77,25 @@ class FaceList extends Component {
         // console.log("URL in CDM: ", customer_url);
         let a = 0;
         let track = -1;
+        const customer_msg = this.props.message;
         const customer_id = this.props.name;
         const customer_desc = this.props.desc;
         const customer_url = this.props.faceIcon;
         const customer_ageClass = this.props.ageClass;
         const customer_gender = this.props.gender;
         const customer_expr = this.props.expression;
+        const customer_visit = this.props.visitCount;
         const opt = {value: this.props.value, label: customer_id};
+        //console.log(opt);
         const profile = {
+            status: customer_msg,
             id: customer_id, 
             desc: customer_desc, 
             url: customer_url,
             age: customer_ageClass,
             gender: customer_gender,
-            expression: customer_expr 
+            expression: customer_expr,
+            visit: customer_visit
         };
         for (var i=0; i < faceOptions.length; i++) {
                 if (faceOptions[i].label != opt.label) {
@@ -99,14 +114,17 @@ class FaceList extends Component {
             <>
                 <Select options={faceOptions} onChange={this.handleChange.bind(this)}/>
                 <CustomerCard 
+                    MSG={customer_profiles[this.state.target].status}
                     ID={customer_profiles[this.state.target].id} 
                     DESC={customer_profiles[this.state.target].desc}
                     URL={customer_profiles[this.state.target].url }
                     AGE={customer_profiles[this.state.target].age} 
                     GENDER={customer_profiles[this.state.target].gender}
                     EXPRESSION={customer_profiles[this.state.target].expression}
+                    VISIT={customer_profiles[this.state.target].visit}
                     parentCallback = {this.handleCallback} 
                     purchase = {this.props.purchase}
+                    reset={this.flagReset}
                 />
             </>
         )

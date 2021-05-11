@@ -9,6 +9,7 @@ const CustomerSchema = new Schema({
     age: { type: Number, required: true },
     gender : { type: String, required: true },
     expression : { type: String, required: true },
+    visits : { type: Number, required: true },
 }, {
     timestamps: true,
 });

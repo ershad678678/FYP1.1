@@ -14,6 +14,7 @@ router.route('/add').post((req, res) => {
     const age = req.body.age;
     const gender = req.body.gender;
     const expression = req.body.expr;
+    const visits = req.body.visit;
     //console.log(label,descriptor)
     const newCustomer = new Customer({
       label,
@@ -21,7 +22,8 @@ router.route('/add').post((req, res) => {
       picture,
       age,
       gender,
-      expression
+      expression,
+      visits
     });
 
     newCustomer.save()
@@ -44,13 +46,19 @@ router.route('/update/:id').post((req, res) => {
       customer.age = req.body.age;
       customer.gender = req.body.gender;
       customer.expression = req.body.expr;
-      //customer.age = Number(req.body.duration);
 
       customer.save()
         .then(() => res.json('Customer updated!'))
         .catch(err => res.status(400).json('Error: ' + err));
     })
     .catch(err => res.status(500).json('Error: ' + err));
+});
+
+router.route('/incvisit/:name').put((req, res) => {
+  Customer.findOneAndUpdate(
+    { "label": req.params.name },
+    { $inc: { "visits" : 1 } }
+  ).catch(err => res.status(500).json('Error: '+ err));
 });
 
 module.exports = router;
