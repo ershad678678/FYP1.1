@@ -39,7 +39,7 @@ router.route('/:id').get((req, res) => {
 
 router.route('/update/:id').post((req, res) => {
   Customer.findById(req.params.id)
-    .then(exercise => {
+    .then(customer => {
       customer.label = req.body.name;
       customer.descriptor = req.body.descriptor;
       customer.picture = req.body.url;

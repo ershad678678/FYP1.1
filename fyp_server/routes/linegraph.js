@@ -1,5 +1,6 @@
 const router = require('express').Router();
 let LineGraph = require('../models/linegraph.model.js');
+let Visits = require('../models/visits.model.js');
 
 router.route('/').get((req, res) => {
     LineGraph.find({})
@@ -10,18 +11,35 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/add').put((req, res) => {
-    const label = req.body.label;
-    const data = req.body.data;
-    console.log(label,data)
-    const newLineGraph = new LineGraph({
-        label,
-        data
-    });
-
-    newLineGraph.save()
-    .then(() => res.json('line data added!'))
-    .catch(err => {res.status(500).json('Error: ' + err);
-    console.log("Error is here")});
+    let hour_count = [];
+    Visits.count({ time: {$regex: /^8:\d\d:\d\d AM$/} })
+        .then(res => hour_count.push(res));
+    Visits.count({ time: {$regex: /^9:\d\d:\d\d AM$/} })
+        .then(res => hour_count.push(res));
+    Visits.count({ time: {$regex: /^10:\d\d:\d\d AM$/} })
+        .then(res => hour_count.push(res));
+    Visits.count({ time: {$regex: /^11:\d\d:\d\d AM$/} })
+        .then(res => hour_count.push(res));
+    Visits.count({ time: {$regex: /^12:\d\d:\d\d PM$/} })
+        .then(res => hour_count.push(res));
+    Visits.count({ time: {$regex: /^1:\d\d:\d\d PM$/} })
+        .then(res => hour_count.push(res));
+    Visits.count({ time: {$regex: /^2:\d\d:\d\d PM$/} })
+        .then(res => hour_count.push(res));
+    Visits.count({ time: {$regex: /^3:\d\d:\d\d PM$/} })
+        .then(res => hour_count.push(res));
+    Visits.count({ time: {$regex: /^4:\d\d:\d\d PM$/} })
+        .then(res => hour_count.push(res));
+    Visits.count({ time: {$regex: /^5:\d\d:\d\d PM$/} })
+        .then(res => hour_count.push(res));
+    Visits.count({ time: {$regex: /^6:\d\d:\d\d PM$/} })
+        .then(res => {
+            hour_count.push(res);
+            LineGraph.updateOne(
+                {},
+                {$set: {data: hour_count}}
+            ).then(console.log("Updated"));
+        }).catch(err => res.status(500).json('Error: '+ err));
 });
 
 router.route('/delete/:id').delete((req, res) => {

@@ -3,6 +3,7 @@ import Grid from "@material-ui/core/Grid";
 import { Line, Pie, Bar, Doughnut } from "react-chartjs-2";
 import '../../App.css'
 import axios from "axios"
+import { Button } from "@material-ui/core";
     
 const CustomerAnalytics = () => {
 
@@ -190,28 +191,49 @@ const piedata = {
     labels: multiLineGraph.label,
     datasets: [
       {
-        label: "Angry",
+        label: "Neutral",
         data: multiLineGraph.line1data,
         fill: false,
         backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgba(255, 99, 132, 0.2)",
       },
       {
-        label: "Calm",
+        label: "Happy",
         data: multiLineGraph.line2data,
         fill: false,
         backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgba(255, 99, 132, 0.2)",
       },
       {
-        label: "Disgusted",
+        label: "Sad",
         data: multiLineGraph.line3data,
         fill: false,
         backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgba(255, 99, 132, 0.2)",
       },
       {
-        label: "Happy",
+        label: "Angry",
+        data: multiLineGraph.line4data,
+        fill: false,
+        backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgba(255, 99, 132, 0.2)",
+      },
+      {
+        label: "Fearful",
+        data: multiLineGraph.line4data,
+        fill: false,
+        backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgba(255, 99, 132, 0.2)",
+      },
+      {
+        label: "Disgusted",
+        data: multiLineGraph.line4data,
+        fill: false,
+        backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgba(255, 99, 132, 0.2)",
+      },
+      {
+        label: "Surprised",
         data: multiLineGraph.line4data,
         fill: false,
         backgroundColor: "rgb(255, 99, 132)",

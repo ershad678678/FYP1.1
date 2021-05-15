@@ -16,6 +16,7 @@ class Customer_Card extends Component{
   constructor(props){
     super(props);
   }
+
   handleDelete = () => {
     this.props.parentCallback(this.props.ID);
   }
@@ -32,50 +33,52 @@ class Customer_Card extends Component{
     }
     axios.post('http://localhost:10000/customer/add', custmr)
          .then(res => console.log(res.data));
-    //this.savePurchase();
+    this.savePurchase(this.props.ID);
+    this.visit_info(this.props.ID);
+    this.props.parentCallback(this.props.ID);
+    this.props.reset(this.props.ID);
   }
 
   updateCustomer = () => {
     let query = this.props.ID;
     axios.put('http://localhost:10000/customer/incvisit/'+query)
          .then(res => console.log(res.data));
+    this.savePurchase(query);
+    this.visit_info(query);
     this.props.parentCallback(query);
     this.props.reset(query);
   }
 
-  savePurchase = () => {
-  let query = this.props.ID;
+  savePurchase = (query) => {
+  //let query = this.props.ID;
   axios.get('http://localhost:10000/purchases/'+query)
        .then(response => {
           if(response.data == 0){
-            // means first ever transaction of customer
+            /* no purchase record exists - record first purchase */
             let buy = this.pushTransaction(this.props.purchase);
-            console.log("IF EXECUTED");
             let transaction = {
-            id: this.props.ID,
-            purchase: buy
-          }
+              id: query,
+              purchase: buy
+            }
             axios.post('http://localhost:10000/purchases/add', transaction)
                 .then(res => console.log(res.data));
           }
           else{
-          console.log("ELSE EXECUTED")
-          let buy = this.updateTransaction(response.data);
-          let transaction = {
-          id: this.props.ID,
-          purchase: buy
+            console.log("ELSE EXECUTED");
+            let buy = this.updateTransaction(response.data);
+            let transaction = {
+              id: query,
+              purchase: buy
+            }
+            axios.put('http://localhost:10000/purchases/update/'+query, transaction)
+                .then(res => console.log(res.data));
           }
-          axios.put('http://localhost:10000/purchases/update/'+query, transaction)
-               .then(res => console.log(res.data));
-          }
-       })//.catch(console.log("Error"))
+       })
   }
 
   pushTransaction = (purch) => {
-    //let purch = this.props.purchase;
     let items = [];
     purch.forEach(p => {
-      //console.log(p.item_name,p.image_url,p.checkoutqty,p.retail_price);
       let entry = {
         item: p.item_name,
         img: p.image_url,
@@ -89,29 +92,44 @@ class Customer_Card extends Component{
 
   updateTransaction = (data) => {
     let old_items = data[0].items;
-    //console.log("Old Items: ",old_items);
-    let new_items = this.pushTransaction(this.props.purchase);
-    //console.log("New Items: ",new_items);
+    let new_purch = this.props.purchase;
+    let temp = [];
+    new_purch.forEach(np => {
+      let check = false;
+      for(var i=0; i < old_items.length; i++){
+        if (np.item_name == old_items[i].item){
+          old_items[i].qty += np.checkoutqty;
+          check = true;
+        }
+      }
+      if (check == false){
+        temp.push(np);
+      }
+    });
+    let new_items = this.pushTransaction(temp);
     let updated_items = old_items.concat(new_items);
-    console.log("Merged Items: ",updated_items);
     return updated_items;
   }
 
-  componentDidUpdate(){
-  //  let prch = this.props.purchase;
-  //  prch.forEach(p => {
-  //    console.log(p.item_name,p.image_url,p.checkoutqty,p.retail_price);
-  //  })
-  //console.log(this.props.purchase);
+  visit_info = (name) => {
+    var dt = new Date();
+    var date = dt.toLocaleDateString();
+    var time = dt.toLocaleTimeString();
+    let trnsc = this.pushTransaction(this.props.purchase);
+    let entry = {
+      name: name,
+      gender: this.props.GENDER,
+      expression: this.props.EXPRESSION,
+      visitNo: this.props.VISIT,
+      transaction: trnsc,
+      dateToday: date,
+      timeNow: time
+    }
+    axios.post('http://localhost:10000/visits/add/', entry)
+        .then(res => console.log(res.data));
   }
 
   render(){
-    const p_history = [
-      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-      "https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?ixid=MnwxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxfHx8ZW58MHx8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-    ];
     const { classes } = this.props;
     return (
       <Card className={classes.root}>
@@ -123,11 +141,6 @@ class Customer_Card extends Component{
       {this.props.MSG}
       <CardContent>
         <Grid className={classes.details} container spacing={1}>
-          {/* <Grid className={classes.line} item xs={6}>
-            <Typography variant="body2" color="textPrimary" component="p">
-              {this.props.MSG}
-            </Typography>
-          </Grid> */}
           <Grid className={classes.line} item xs={6}>
             <Typography variant="body2" color="textSecondary" component="p">
               Customer Name:
@@ -183,11 +196,11 @@ class Customer_Card extends Component{
         </Grid>
         {/* HERE LIES THE NAME */}
         {/* <TextField id="outlined-basic" label="Outlined" variant="outlined" /> */}
-        <Typography  color="textSecondary" variant="p" style={{marginLeft:'5px'}}>
+        <Typography  color="textSecondary" variant="body2" style={{marginLeft:'5px'}}>
           Purchase History:
         </Typography>
         <div style={{ display: "flex", marginBottom:'20px' }}>
-          {p_history.map((value) => (
+          {this.props.HIST.map((value) => (
             <CardMedia
               className={classes.history_images}
               image={value}
@@ -196,7 +209,7 @@ class Customer_Card extends Component{
           ))}
         </div>
 
-        <Typography  color="textSecondary" variant="p" style={{marginLeft:'5px'}}>
+        {/* <Typography  color="textSecondary" variant="body2" style={{marginLeft:'5px'}}>
           Customer might be interested in
         </Typography>
         <div style={{ display: "flex" }}>
@@ -207,7 +220,7 @@ class Customer_Card extends Component{
               title="History"
             />
           ))}
-        </div>
+        </div> */}
         <Button
           variant="contained"
           color="secondary"

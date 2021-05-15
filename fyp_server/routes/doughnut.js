@@ -1,5 +1,6 @@
 const router = require('express').Router();
 let DoughnutChart = require('../models/doughnut.model.js');
+let Visits = require('../models/visits.model');
 
 router.route('/').get((req, res) => {
     DoughnutChart.find({})
@@ -10,18 +11,34 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/add').put((req, res) => {
-    const label = req.body.label;
-    const data = req.body.data;
-    console.log(label,data)
-    const newDoughnutChart = new DoughnutChart({
-        label,
-        data
-    });
-
-    newDoughnutChart.save()
-    .then(() => res.json('line data added!'))
-    .catch(err => {res.status(500).json('Error: ' + err);
-    console.log("Error is here")});
+    let expr_count = [];
+    Visits.count({
+        expression: 'neutral'
+    }).then(res => expr_count.push(res));
+    Visits.count({
+        expression: 'happy'
+    }).then(res => expr_count.push(res));
+    Visits.count({
+        expression: 'sad'
+    }).then(res => expr_count.push(res));
+    Visits.count({
+        expression: 'angry'
+    }).then(res => expr_count.push(res));
+    Visits.count({
+        expression: 'fearful'
+    }).then(res => expr_count.push(res));
+    Visits.count({
+        expression: 'disgusted'
+    }).then(res => expr_count.push(res));
+    Visits.count({
+        expression: 'surprised'
+    }).then(res => {
+        expr_count.push(res); 
+        DoughnutChart.updateOne(
+            {},
+            {$set: {data: expr_count}}
+        ).then(console.log("Updated"));
+    }).catch(err => res.status(500).json('Error: '+ err));
 });
 
 router.route('/delete/:id').delete((req, res) => {

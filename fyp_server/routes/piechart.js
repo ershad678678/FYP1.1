@@ -1,5 +1,6 @@
 const router = require('express').Router();
 let PieChart = require('../models/piechart.model.js');
+let Customer = require('../models/customer.model.js');
 
 router.route('/').get((req, res) => {
     PieChart.find({})
@@ -10,18 +11,22 @@ router.route('/').get((req, res) => {
 });
 
 router.route('/add').put((req, res) => {
-    const label = req.body.label;
-    const data = req.body.data;
-    console.log(label,data)
-    const newPieChart = new PieChart({
-        label,
-        data
-    });
-
-    newPieChart.save()
-    .then(() => res.json('line data added!'))
-    .catch(err => {res.status(500).json('Error: ' + err);
-    console.log("Error is here")});
+    let male, female = 0;
+    let count = [];
+    Customer.count({
+        gender: "male"
+    }).then(res => {male = res;console.log(male); count.push(male)});
+    Customer.count({
+        gender: "female"
+    }).then(res => {
+        female = res;
+        console.log(female);
+        count.push(female); 
+        PieChart.updateOne(
+            {},
+            {$set: {data: count}}
+        ).then(console.log("Updated"));
+    }).catch(err => res.status(500).json('Error: '+ err));
 });
 
 router.route('/delete/:id').delete((req, res) => {

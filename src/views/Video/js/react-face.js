@@ -114,6 +114,7 @@ class FaceModel extends Component{
                         }
                         else if((bestMatch.distance < maxThreshold) && (customer_info.length > 0)){
                             let track = 0;
+                            let mood = this.faceExpression(fd.expressions);
                             let resizedDetection = faceapi.resizeResults(fd, displaySize);
                             faceapi.draw.drawDetections(canvas, resizedDetection);
                             this.drawCanvas(resizedDetection, canvas, bestMatch.label);
@@ -124,6 +125,7 @@ class FaceModel extends Component{
                             }
                             if(customer_info[track].flag == false){
                                 ++customer_info[track].vis;
+                                customer_info[track].expr = mood;
                                 this.setState({
                                     msg: "Customer exists",
                                     name: customer_info[track].name,
@@ -204,7 +206,17 @@ class FaceModel extends Component{
             expr: mood,
             visit: visit_no,
             val: id
-        })
+        });
+        let cinfo = {
+            name: name,
+            face: imgStr,
+            age: Age,
+            gender: det.gender,
+            expr: mood,
+            vis: visit_no,
+            flag: true
+        }
+        customer_info.push(cinfo);
         console.log(this.state);
     }
 

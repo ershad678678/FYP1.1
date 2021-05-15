@@ -21,6 +21,7 @@ connection.once('open', () => {
 const imageRouter = require('./routes/image');
 const customerRouter = require('./routes/customer');
 const purchaseRouter = require('./routes/purchases');
+const visitsRouter = require('./routes/visits');
 const lineGraphRouter = require('./routes/linegraph');
 const barChartRouter = require('./routes/barchart');
 const pieChartRouter = require('./routes/piechart');
@@ -32,6 +33,7 @@ const multiLineGraphRouter = require('./routes/multilinegraph');
 app.use('/image', imageRouter);
 app.use('/customer', customerRouter);
 app.use('/purchases', purchaseRouter);
+app.use('/visits', visitsRouter);
 app.use('/linegraph', lineGraphRouter);
 app.use('/barchart', barChartRouter);
 app.use('/piechart', pieChartRouter);

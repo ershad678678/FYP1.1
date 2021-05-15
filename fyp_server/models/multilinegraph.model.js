@@ -28,6 +28,24 @@ const MultiLineGraphSchema = new Schema({
       required: true,
     },
   ],
+  line5data: [
+    {
+      type: Number,
+      required: true,
+    },
+  ],
+  line6data: [
+    {
+      type: Number,
+      required: true,
+    },
+  ],
+  line7data: [
+    {
+      type: Number,
+      required: true,
+    },
+  ],
 });
 
 const MultiLineGraph = mongoose.model("MultiLineGraph", MultiLineGraphSchema);

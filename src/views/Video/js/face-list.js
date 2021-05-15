@@ -1,6 +1,7 @@
 import React, { Component, useState , createRef } from 'react';
 import Select from 'react-select';
 import CustomerCard from './customer-card.js';
+import axios from 'axios';
 
 const faceOptions = [];
 const customer_profiles = [];
@@ -49,6 +50,7 @@ class FaceList extends Component {
     }
 
     UNSAFE_componentWillMount(){
+        let p_history = [];
         const customer_msg = this.props.message;
         const customer_id = this.props.name;
         const customer_desc = this.props.desc;
@@ -67,7 +69,8 @@ class FaceList extends Component {
             age: customer_ageClass,
             gender: customer_gender,
             expression: customer_expr,
-            visit: customer_visit
+            visit: customer_visit,
+            history: p_history
         };
         faceOptions.push(opt);
         customer_profiles.push(profile);
@@ -77,6 +80,7 @@ class FaceList extends Component {
         // console.log("URL in CDM: ", customer_url);
         let a = 0;
         let track = -1;
+        let p_history = [];
         const customer_msg = this.props.message;
         const customer_id = this.props.name;
         const customer_desc = this.props.desc;
@@ -86,6 +90,17 @@ class FaceList extends Component {
         const customer_expr = this.props.expression;
         const customer_visit = this.props.visitCount;
         const opt = {value: this.props.value, label: customer_id};
+        axios.get('http://localhost:10000/purchases/'+customer_id)
+       .then(response => {
+            if(response.data == 0){
+                p_history = [];
+            }
+            else{
+                response.data[0].items.forEach(element => {
+                    p_history.push(element.img);
+                });
+            }   
+       })
         //console.log(opt);
         const profile = {
             status: customer_msg,
@@ -95,7 +110,8 @@ class FaceList extends Component {
             age: customer_ageClass,
             gender: customer_gender,
             expression: customer_expr,
-            visit: customer_visit
+            visit: customer_visit,
+            history: p_history
         };
         for (var i=0; i < faceOptions.length; i++) {
                 if (faceOptions[i].label != opt.label) {
@@ -122,6 +138,7 @@ class FaceList extends Component {
                     GENDER={customer_profiles[this.state.target].gender}
                     EXPRESSION={customer_profiles[this.state.target].expression}
                     VISIT={customer_profiles[this.state.target].visit}
+                    HIST={customer_profiles[this.state.target].history}
                     parentCallback = {this.handleCallback} 
                     purchase = {this.props.purchase}
                     reset={this.flagReset}

@@ -28,7 +28,7 @@ router.route('/:name').get((req, res) => {
 router.route('/update/:name').put((req, res) => {
   const query = { "name": req.params.name };
   const replacement = { "name": req.body.id , "items": req.body.purchase };
-  Purchase.findOneAndReplace(query, replacement)
+  Purchase.findOneAndReplace(query, replacement, {upsert:true})
     .catch(err => res.status(500).json('Error: ' + err));
 });
 
