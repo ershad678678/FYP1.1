@@ -83,11 +83,11 @@ const Sidebar = props => {
       href: '/analytics',
       icon: <ShoppingBasketIcon />
     },
-    {
-      title: 'Demo video',
-      href: '/video',
-      icon: <AccountBoxIcon />
-    }
+    // {
+    //   title: 'Demo video',
+    //   href: '/video',
+    //   icon: <AccountBoxIcon />
+    // }
   ];
 
   return (

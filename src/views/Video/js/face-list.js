@@ -51,6 +51,8 @@ class FaceList extends Component {
 
     UNSAFE_componentWillMount(){
         let p_history = [];
+        let recomm = [];
+        let sim_users = [];
         const customer_msg = this.props.message;
         const customer_id = this.props.name;
         const customer_desc = this.props.desc;
@@ -59,6 +61,8 @@ class FaceList extends Component {
         const customer_gender = this.props.gender;
         const customer_expr = this.props.expression;
         const customer_visit = this.props.visitCount;
+        const customer_avgSpend = this.props.avgSpent;
+        const customer_totSpend = this.props.totSpent;
         const opt = {value: this.props.value, label: customer_id};
         //console.log(opt);
         const profile = {
@@ -70,7 +74,11 @@ class FaceList extends Component {
             gender: customer_gender,
             expression: customer_expr,
             visit: customer_visit,
-            history: p_history
+            avg_spend: customer_avgSpend,
+            tot_spend: customer_totSpend,
+            history: p_history,
+            recommend: recomm,
+            related_users: sim_users
         };
         faceOptions.push(opt);
         customer_profiles.push(profile);
@@ -81,6 +89,8 @@ class FaceList extends Component {
         let a = 0;
         let track = -1;
         let p_history = [];
+        let recomm = [];
+        let sim_users = [];
         const customer_msg = this.props.message;
         const customer_id = this.props.name;
         const customer_desc = this.props.desc;
@@ -89,6 +99,8 @@ class FaceList extends Component {
         const customer_gender = this.props.gender;
         const customer_expr = this.props.expression;
         const customer_visit = this.props.visitCount;
+        const customer_avgSpend = this.props.avgSpent;
+        const customer_totSpend = this.props.totSpent;
         const opt = {value: this.props.value, label: customer_id};
         axios.get('http://localhost:10000/purchases/'+customer_id)
        .then(response => {
@@ -96,8 +108,28 @@ class FaceList extends Component {
                 p_history = [];
             }
             else{
-                response.data[0].items.forEach(element => {
-                    p_history.push(element.img);
+                let buff = response.data[0].items;
+                for(let i=0; i < 5; i++){
+                    if(buff[i] !=  undefined){
+                        p_history.push(buff[i].img)
+                    }
+                    else{
+                        break;
+                    }
+                }
+            }   
+       })
+       axios.get('http://localhost:10000/recommend/'+customer_id)
+       .then(response => {
+            if(response.data == 0){
+                recomm = [];
+            }
+            else{
+                response.data[0].recommendation.forEach(element => {
+                    recomm.push(element.img);
+                });
+                response.data[0].persons.forEach(element => {
+                    sim_users.push(element);
                 });
             }   
        })
@@ -111,7 +143,11 @@ class FaceList extends Component {
             gender: customer_gender,
             expression: customer_expr,
             visit: customer_visit,
-            history: p_history
+            avg_spend: customer_avgSpend,
+            tot_spend: customer_totSpend,
+            history: p_history,
+            recommend: recomm,
+            related_users: sim_users
         };
         for (var i=0; i < faceOptions.length; i++) {
                 if (faceOptions[i].label != opt.label) {
@@ -127,7 +163,7 @@ class FaceList extends Component {
 
     render(){
         return (
-            <>
+            <div style={{width: '340px'}}>
                 <Select options={faceOptions} onChange={this.handleChange.bind(this)}/>
                 <CustomerCard 
                     MSG={customer_profiles[this.state.target].status}
@@ -138,12 +174,16 @@ class FaceList extends Component {
                     GENDER={customer_profiles[this.state.target].gender}
                     EXPRESSION={customer_profiles[this.state.target].expression}
                     VISIT={customer_profiles[this.state.target].visit}
+                    AVGSPEND={customer_profiles[this.state.target].avg_spend}
+                    TOTSPEND={customer_profiles[this.state.target].tot_spend}
                     HIST={customer_profiles[this.state.target].history}
+                    RECOMM={customer_profiles[this.state.target].recommend}
+                    SIM={customer_profiles[this.state.target].related_users}
                     parentCallback = {this.handleCallback} 
                     purchase = {this.props.purchase}
                     reset={this.flagReset}
                 />
-            </>
+            </div>
         )
     }
 }

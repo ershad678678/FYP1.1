@@ -15,6 +15,8 @@ router.route('/add').post((req, res) => {
     const gender = req.body.gender;
     const expression = req.body.expr;
     const visits = req.body.visit;
+    const avgSpend = req.body.avg;
+    const totSpend = req.body.total;
     //console.log(label,descriptor)
     const newCustomer = new Customer({
       label,
@@ -23,7 +25,9 @@ router.route('/add').post((req, res) => {
       age,
       gender,
       expression,
-      visits
+      visits,
+      avgSpend,
+      totSpend
     });
 
     newCustomer.save()
@@ -58,6 +62,17 @@ router.route('/incvisit/:name').put((req, res) => {
   Customer.findOneAndUpdate(
     { "label": req.params.name },
     { $inc: { "visits" : 1 } }
+  ).catch(err => res.status(500).json('Error: '+ err));
+});
+
+router.route('/spending/:name').put((req, res) => {
+  console.log(req.body);
+  const expenditure = req.body.purchaseTotal;
+  const avg_expend = Math.floor((req.body.prevTotal + expenditure) / req.body.noOfVisits);
+  Customer.findOneAndUpdate(
+    { "label": req.params.name },
+    { "avg_spending": avg_expend, $inc: { "total_spending" : expenditure }},
+    {upsert: true}
   ).catch(err => res.status(500).json('Error: '+ err));
 });
 

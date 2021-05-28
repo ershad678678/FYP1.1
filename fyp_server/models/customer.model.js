@@ -10,6 +10,8 @@ const CustomerSchema = new Schema({
     gender : { type: String, required: true },
     expression : { type: String, required: true },
     visits : { type: Number, required: true },
+    avg_spending : { type: Number, required: true },
+    total_spending : { type: Number, required: true },
 }, {
     timestamps: true,
 });

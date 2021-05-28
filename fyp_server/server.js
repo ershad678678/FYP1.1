@@ -28,6 +28,7 @@ const pieChartRouter = require('./routes/piechart');
 const doughnutChartRouter = require('./routes/doughnut');
 const multiBarChartRouter = require('./routes/multibarchart');
 const multiLineGraphRouter = require('./routes/multilinegraph');
+const recommendationsRouter = require('./routes/recommendations');
 
 
 app.use('/image', imageRouter);
@@ -40,6 +41,7 @@ app.use('/piechart', pieChartRouter);
 app.use('/doughnutchart', doughnutChartRouter);
 app.use('/multibarchart', multiBarChartRouter);
 app.use('/multilinegraph', multiLineGraphRouter);
+app.use('/recommend', recommendationsRouter);
 
 
 app.listen(port, () => {
