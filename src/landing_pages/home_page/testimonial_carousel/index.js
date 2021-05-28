@@ -14,13 +14,13 @@ class TestimonialCarousel extends Component {
                         <Grid className="content-parent" item md={7} sm={7} xs={12}>
                             <div className="testimonial-content">
                                 <h1>Hear our cutomer stories</h1>
-                                <p>I tried this app for the first time. Trust me this is way better than other POS software in the market. It is simple and powerful. Also, the customer’s assistance is amazing and super cooperative. It's really worth the money.</p>
-                                <h3>Food and drink retail, Pakistan</h3>
+                                <p>We implemented this state-of-the-art POS system in our bakery. Trust me it completely revolutionized my business. It is very simple to use and powerful. We have been able to vastly boost our sales and get detailed insight about our customer preferences. It's really worth the money.</p>
+                                <h3>Modern Bakery, Aabpara</h3>
                             </div>
                         </Grid>
                         <Grid item md={5} sm={5} xs={12}>
                             <div className="testimonial-image-container">
-                                <img className="testimonial-image" src="https://www.connectpos.com/wp-content/themes/connectSpos/images/testimonial-1.png" alt="img"/>
+                                <img className="testimonial-image" src="https://mir-s3-cdn-cf.behance.net/project_modules/max_1200/65bf3455998089.599c4bf97cba7.jpg" alt="img"/>
                             </div>
                         </Grid>
                     </Grid>

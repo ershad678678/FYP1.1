@@ -25,7 +25,7 @@ const Navbar = () => {
   return (
     <Nav >
       <div className="logo">
-        DEMO POS
+        In-Store Video Analytics
       </div>
       <Burger />
     </Nav>
